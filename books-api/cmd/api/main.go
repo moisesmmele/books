@@ -27,6 +27,7 @@ func main() {
 	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	//example DSN: "host=localhost port=5432 user=USER password=SECRET dbname=DBNAME sslmode=disable timezone=utc connect_timeout=5"
 
+	dsn := os.Getenv("DSN")
 	db, err := driver.ConnectPostgres(dsn)
 	if err != nil {
 		log.Fatal("Cannot connect to database", err)

@@ -8,23 +8,23 @@ BINARY_NAME=books-api
 
 build:
 	@echo "building the backend..."
-	go build -i ${BINARY_NAME} ./cmd/api/
+	go build -o $(BINARY_NAME) ./cmd/api/
 	@echo "built."
 
 run: build
 	@echo "starting the backend..."
-	@env DSN=${DSN} ./${BINARY_NAME} &
+	@env DSN=$(DSN) ./$(BINARY_NAME) &
 	@echo "started."
 
 clean:
 	@echo "Cleaning..."
 	@go clean
-	@rm ${BINARY_NAME}
+	@rm $(BINARY_NAME)
 	@echo "cleaned."
 
 start: run
 
 stop:
 	@echo "stopping the backend..."
-	@-pkill -SIGTERM -f "./${BINARY_NAME}"
+	@-pkill -SIGTERM -f "./$(BINARY_NAME)"
 	@echo "stopped."
