@@ -27,7 +27,6 @@ func (app *App) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.infoLog.Println(credentials.Email, credentials.Password)
-	//sends response
 	payload.Error = false
 	payload.Message = "Success"
 

@@ -43,3 +43,17 @@ func (app *App) writeJSON(w http.ResponseWriter, status int, data interface{}, h
 	}
 	return nil
 }
+
+func (app *App) errorJSON(w http.ResponseWriter, err error, status ...int) {
+	statusCode := http.StatusBadRequest
+	if len(status) > 0 {
+		statusCode = status[0]
+	}
+	var payload jsonResponse
+	payload.Error = true
+	payload.Message = err.Error()
+	err = app.writeJSON(w, statusCode, payload)
+	if err != nil {
+		app.errorLog.Println(err)
+	}
+}
