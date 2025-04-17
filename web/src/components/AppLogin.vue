@@ -7,6 +7,26 @@ export default {
   methods: {
     submitHandler() {
       console.log("submitHandler called");
+      const payload = {
+        email: this.email,
+        password: this.password,
+      }
+      const request = {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json",
+        }
+      }
+      fetch("http://localhost:8082/users/login", request)
+          .then((response) => response.json()
+          .then((data) => {
+            if (data.error) {
+              console.log(data.error)
+            } else {
+              console.log(data)
+            }
+          }))
     }
   },
   data() {
