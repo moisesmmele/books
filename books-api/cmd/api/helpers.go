@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func (app *App) readJSON(w http.ResponseWriter, r *http.Request, data interface{}) error {
@@ -49,9 +50,26 @@ func (app *App) errorJSON(w http.ResponseWriter, err error, status ...int) {
 	if len(status) > 0 {
 		statusCode = status[0]
 	}
+
+	var customErr error
+	switch {
+	case strings.Contains(err.Error(), "SQLSTATE 23505"):
+		customErr = errors.New("Duplicate value violates unique constraint")
+		statusCode = http.StatusForbidden
+	case strings.Contains(err.Error(), "SQLSTATE 22001"):
+		customErr = errors.New("Value is too large")
+		statusCode = http.StatusForbidden
+	case strings.Contains(err.Error(), "SQLSTATE 23503"):
+		customErr = errors.New("Foreign key violation")
+		statusCode = http.StatusForbidden
+	default:
+		customErr = err
+		statusCode = http.StatusInternalServerError
+	}
+
 	var payload jsonResponse
 	payload.Error = true
-	payload.Message = err.Error()
+	payload.Message = customErr.Error()
 	err = app.writeJSON(w, statusCode, payload)
 	if err != nil {
 		app.errorLog.Println(err)

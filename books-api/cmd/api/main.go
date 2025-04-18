@@ -1,6 +1,7 @@
 package main
 
 import (
+	"books-api/internal/data"
 	"books-api/internal/driver"
 	"fmt"
 	"log"
@@ -16,7 +17,7 @@ type App struct {
 	config   Config
 	infoLog  *log.Logger
 	errorLog *log.Logger
-	db       *driver.DB
+	models   data.Models
 }
 
 func main() {
@@ -33,8 +34,15 @@ func main() {
 		log.Fatal("Cannot connect to database", err)
 	}
 
-	app := &App{config, infoLog, errorLog, db}
+	defer db.SQL.Close()
 
+	app := &App{
+		config:   config,
+		infoLog:  infoLog,
+		errorLog: errorLog,
+		models:   data.New(db.SQL),
+	}
+	
 	err = app.serve()
 	if err != nil {
 		log.Fatal(err)
