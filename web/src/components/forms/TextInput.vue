@@ -9,7 +9,7 @@ export default {
     required: String,
     min: String,
     max: String,
-    value: String,
+    modelValue: String,
   },
 }
 </script>
@@ -18,7 +18,8 @@ export default {
   <div class="mb-3">
     <label :for="name" class="form-label">{{label}}</label>
     <input :type="type" :name="name" :placeholder="placeholder"
-           :value="value" :min="min" :max="max"
+           :value="modelValue" :min="min" :max="max"
+           @input="$emit('update:modelValue', $event.target.value)"
            :autocomplete="name + '-new'" :required="required"
            class="form-control">
   </div>

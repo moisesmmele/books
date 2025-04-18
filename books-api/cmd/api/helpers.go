@@ -64,7 +64,7 @@ func (app *App) errorJSON(w http.ResponseWriter, err error, status ...int) {
 		statusCode = http.StatusForbidden
 	default:
 		customErr = err
-		statusCode = http.StatusInternalServerError
+		statusCode = http.StatusForbidden
 	}
 
 	var payload jsonResponse

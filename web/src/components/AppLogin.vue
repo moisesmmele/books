@@ -44,6 +44,9 @@ export default {
         <TextInput v-model="email" label="email" type="email" placeholder="Email" required=""/>
         <TextInput v-model="password" label="password" type="password" placeholder="Password" required=""/>
         <input type="submit" class="btn btn-primary" value="Login" />
+        <hr>
+        {{email}}
+        {{password}}
       </FormTag>
     </div>
   </div>

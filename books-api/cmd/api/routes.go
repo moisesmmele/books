@@ -30,8 +30,17 @@ func (app *App) routes() http.Handler {
 			app.errorLog.Println(err)
 			return
 		}
-		app.writeJSON(w, http.StatusOK, all)
 
+		payload := jsonResponse{
+			Error:   false,
+			Message: "Success",
+			Data:    envelope{"users": all},
+		}
+
+		err = app.writeJSON(w, http.StatusOK, payload)
+		if err != nil {
+			app.errorLog.Println(err)
+		}
 	})
 	mux.Get("/users/add", func(w http.ResponseWriter, r *http.Request) {
 		var user = data.User{
