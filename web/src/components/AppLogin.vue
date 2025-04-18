@@ -1,6 +1,10 @@
 <script>
 import TextInput from "@/components/forms/TextInput.vue";
 import FormTag from "@/components/forms/FormTag.vue"
+import {store} from "@/components/store.js";
+import router from "@/router";
+import notie from "notie/dist/notie";
+
 export default {
   name: "AppLogin",
   components: {TextInput, FormTag},
@@ -19,18 +23,42 @@ export default {
         }
       }
       fetch("http://localhost:8082/users/login", request)
-          .then((response) => response.json()
+          .then((response) => response.json())
           .then((data) => {
             if (data.error) {
-              console.log(data.error)
+              console.log(data.message)
+              notie.alert({
+                type: "error",
+                text: data.message,
+              })
             } else {
-              console.log(data)
+              store.token = data.data.token.token
+              store.user = {
+                id: data.data.user.id,
+                first_name: data.data.user.first_name,
+                last_name: data.data.user.last_name,
+                email: data.data.user.email,
+              }
+              let date = new Date();
+              let expDays = 1;
+              date.setTime(date.getTime() + (expDays * 24 * 60 * 60 * 1000));
+              document.cookie = "_site_data="
+                  + JSON.stringify(data.data) + "; "
+                  + "expires=" + date.toUTCString() + "; "
+                  + "path=/; "
+                  + "SameSite=Strict; "
+                  + "Secure; " ;
+              router.push("/")
             }
-          }))
+          })
     }
   },
   data() {
-    return { email: "", password: "" }
+    return {
+      email: "",
+      password: "",
+      store,
+    }
   }
 }
 </script>
@@ -44,9 +72,6 @@ export default {
         <TextInput v-model="email" label="email" type="email" placeholder="Email" required=""/>
         <TextInput v-model="password" label="password" type="password" placeholder="Password" required=""/>
         <input type="submit" class="btn btn-primary" value="Login" />
-        <hr>
-        {{email}}
-        {{password}}
       </FormTag>
     </div>
   </div>

@@ -1,6 +1,39 @@
 <script>
+import {store} from "@/components/store.js";
+import router from "@/router";
 export default {
-  name: "AppHeader"
+  name: "AppHeader",
+  data() {
+    return {
+      store,
+    }
+  },
+  methods: {
+    logout() {
+      const payload = {
+        token: store.token,
+      }
+      const request = {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json",
+        }
+      }
+      fetch("http://localhost:8082/users/logout", request)
+          .then(res => res.json())
+          .then(data => {
+            if (data.error) {
+              console.log(data.message);
+            } else {
+              store.token = null
+              store.user = {}
+              document.cookie = "_site_data=null; path=/; SameSite=Strict; Secure; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+              router.push({ path: "/login" })
+            }
+          })
+    },
+  }
 }
 </script>
 
@@ -12,14 +45,18 @@ export default {
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <router-link class="nav-link" aria-current="page" to="/">Home</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" aria-current="page" to="/login">Login</router-link>
+            <router-link v-if="store.token == null" class="nav-link" aria-current="page" to="/login">Login</router-link>
+            <router-link v-else class="nav-link" aria-current="page" to="javascript:void(0);" @click="logout">Logout</router-link>
           </li>
         </ul>
+        <span class="navbar-text">
+          {{store.user.first_name ?? ''}}
+        </span>
       </div>
     </div>
   </nav>

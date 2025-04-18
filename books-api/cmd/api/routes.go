@@ -21,8 +21,9 @@ func (app *App) routes() http.Handler {
 		MaxAge:           300,
 	}))
 
-	mux.Get("/users/login", app.Login)
 	mux.Post("/users/login", app.Login)
+	mux.Post("/users/logout", app.Logout)
+
 	mux.Get("/users", func(w http.ResponseWriter, r *http.Request) {
 		var users data.User
 		all, err := users.GetAll()
@@ -42,7 +43,8 @@ func (app *App) routes() http.Handler {
 			app.errorLog.Println(err)
 		}
 	})
-	mux.Get("/users/add", func(w http.ResponseWriter, r *http.Request) {
+
+	mux.Get("/test-add-user", func(w http.ResponseWriter, r *http.Request) {
 		var user = data.User{
 			Email:     "test@email.com",
 			FirstName: "Test",
