@@ -148,9 +148,11 @@ func (u *User) ResetPassword(password string) error {
 }
 func (u *User) VerifyPassword(password string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+
 	if err != nil {
 		switch {
 		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword):
+			// invalid password
 			return false, nil
 		default:
 			return false, err
