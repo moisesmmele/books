@@ -22,7 +22,7 @@ export default {
           "Content-Type": "application/json",
         }
       }
-      fetch("http://localhost:8082/users/login", request)
+      fetch(process.env.VUE_APP_API_URL + "/users/login", request)
           .then((response) => response.json())
           .then((data) => {
             if (data.error) {

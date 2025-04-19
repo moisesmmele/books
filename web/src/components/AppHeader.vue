@@ -20,7 +20,7 @@ export default {
           "Content-Type": "application/json",
         }
       }
-      fetch("http://localhost:8082/users/logout", request)
+      fetch(process.env.VUE_APP_API_URL + "/users/logout", request)
           .then(res => res.json())
           .then(data => {
             if (data.error) {
@@ -48,6 +48,29 @@ export default {
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <router-link class="nav-link" aria-current="page" to="/">Home</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/books">Books</router-link>
+          </li>
+          <li v-if="store.token !== null" class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" id="navbar-dropdown" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+              Admin
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbar-dropdown">
+              <li>
+                <router-link class="dropdown-item" to="/admin/users">Manage Users</router-link>
+              </li>
+              <li>
+                <router-link class="dropdown-item" to="/admin/users/0">Add User</router-link>
+              </li>
+              <li>
+                <router-link class="dropdown-item" to="/admin/books">Manage Books</router-link>
+              </li>
+              <li>
+                <router-link class="dropdown-item" to="/admin/books/0">Add Book</router-link>
+              </li>
+            </ul>
           </li>
           <li class="nav-item">
             <router-link v-if="store.token == null" class="nav-link" aria-current="page" to="/login">Login</router-link>

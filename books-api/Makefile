@@ -13,7 +13,7 @@ build:
 
 run: build
 	@echo "starting the backend..."
-	@env DSN=$(DSN) ./$(BINARY_NAME) &
+	@env DSN=$(DSN) ENV=$(ENV) ./$(BINARY_NAME) &
 	@echo "started."
 
 clean:

@@ -21,28 +21,39 @@ func (app *App) routes() http.Handler {
 		MaxAge:           300,
 	}))
 
+	mux.Route("/admin", func(mux chi.Router) {
+		mux.Use(app.authTokenMiddleware)
+		mux.Get("/users", func(w http.ResponseWriter, r *http.Request) {
+			var users data.User
+			all, err := users.GetAll()
+			if err != nil {
+				app.errorLog.Println(err)
+				return
+			}
+
+			payload := jsonResponse{
+				Error:   false,
+				Message: "Success",
+				Data:    envelope{"users": all},
+			}
+
+			err = app.writeJSON(w, http.StatusOK, payload)
+			if err != nil {
+				app.errorLog.Println(err)
+			}
+		})
+		mux.Post("/foo", func(w http.ResponseWriter, r *http.Request) {
+			payload := jsonResponse{
+				Error:   false,
+				Message: "bar",
+			}
+			app.writeJSON(w, http.StatusOK, payload)
+		})
+
+	})
+
 	mux.Post("/users/login", app.Login)
 	mux.Post("/users/logout", app.Logout)
-
-	mux.Get("/users", func(w http.ResponseWriter, r *http.Request) {
-		var users data.User
-		all, err := users.GetAll()
-		if err != nil {
-			app.errorLog.Println(err)
-			return
-		}
-
-		payload := jsonResponse{
-			Error:   false,
-			Message: "Success",
-			Data:    envelope{"users": all},
-		}
-
-		err = app.writeJSON(w, http.StatusOK, payload)
-		if err != nil {
-			app.errorLog.Println(err)
-		}
-	})
 
 	mux.Get("/test-add-user", func(w http.ResponseWriter, r *http.Request) {
 		var user = data.User{
