@@ -1,7 +1,7 @@
 <template>
   <AppHeader />
   <div>
-    <RouterView/>
+    <RouterView @success="success" @error="error" @warning="warning"/>
   </div>
   <AppFooter />
 </template>
@@ -9,6 +9,7 @@
 import AppHeader from "@/components/AppHeader.vue";
 import {store} from "@/components/store.js";
 import AppFooter from "@/components/AppFooter.vue";
+import notie from "notie/dist/notie";
 
 // const getCookie = (name) => {
 //   return document.cookie.split(";")
@@ -40,6 +41,26 @@ export default {
   data() {
     return {
       store,
+    }
+  },
+  methods: {
+    success(msg) {
+      notie.alert({
+        type: "success",
+        text: msg
+      })
+    },
+    error(msg) {
+      notie.alert({
+        type: "error",
+        text: msg
+      })
+    },
+    warning(msg) {
+      notie.alert({
+        type: "warning",
+        text: msg
+      })
     }
   },
   beforeMount() {

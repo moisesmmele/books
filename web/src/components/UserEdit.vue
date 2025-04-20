@@ -1,6 +1,7 @@
 <script>
 import security from "@/components/security";
 import {store} from "@/components/store";
+import router from "@/router";
 import FormTag from "@/components/forms/FormTag.vue";
 import textInput from "@/components/forms/TextInput.vue";
 import notie from "notie/dist/notie";
@@ -20,10 +21,7 @@ export default {
           .then((response) => response.json())
           .then(response => {
             if (response.error) {
-              notie.alert({
-                type: "error",
-                text: response.message,
-              })
+              this.$emit("error", response.message)
             } else {
               console.log(response)
               this.user = response
@@ -63,22 +61,13 @@ export default {
           .then((response) => response.json())
           .then((response) => {
             if (response.error) {
-              notie.alert({
-                type: "error",
-                text: response.message
-              })
+              this.$emit("error", response.message)
             } else {
-              notie.alert({
-                type: "success",
-                text: response.message
-              })
+              this.$emit("success", response.message)
             }
           })
           .catch((error) => {
-            notie.alert({
-              type: "error",
-              text: error
-            })
+            this.$emit("error", error)
           })
     },
     confirmDelete(id) {
@@ -86,7 +75,22 @@ export default {
         text: "Are you sure?",
         submitText: "Delete",
         submitCallback: function () {
-          console.log("Will delete: ", id)
+          const payload = {
+            userId: id
+          }
+          fetch(process.env.VUE_APP_API_URL + "/admin/users/delete", security.requestOptions(payload))
+              .then(response => response.json())
+              .then((response) => {
+                if (response.error) {
+                  this.$emit("error", response.message)
+                } else {
+                    notie.alert({
+                      type: "success",
+                      text: `User ${id} deleted`
+                    })
+                  router.push('/admin/users')
+                  }
+              })
         }
       })
     }

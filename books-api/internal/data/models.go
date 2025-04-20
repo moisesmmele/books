@@ -39,13 +39,15 @@ type User struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Token     Token     `json:"token"`
+	Active    int       `json:"active"`
 }
 
 func (u *User) GetAll() ([]*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := "SELECT id, email, password, first_name, last_name, created_at, updated_at FROM users order by last_name"
+	query := `SELECT * case when (select count(id) from tokens t where user.id and t.expiry > now()) > 0 then 1
+		else 0 end as has_token FROM users order by last_name`
 	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
@@ -63,6 +65,8 @@ func (u *User) GetAll() ([]*User, error) {
 			&user.LastName,
 			&user.CreatedAt,
 			&user.UpdatedAt,
+			&user.Active,
+			&user.Token.Id,
 		)
 
 		if err != nil {
@@ -112,6 +116,17 @@ func (u *User) Delete() error {
 	defer cancel()
 	stmt := "delete from users where id = $1"
 	_, err := db.ExecContext(ctx, stmt, u.Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *User) DeleteById(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	stmt := "delete from users where id = $1"
+	_, err := db.ExecContext(ctx, stmt, id)
 	if err != nil {
 		return err
 	}

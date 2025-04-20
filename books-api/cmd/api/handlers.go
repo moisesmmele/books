@@ -106,7 +106,6 @@ func (app *App) Logout(w http.ResponseWriter, r *http.Request) {
 		app.errorLog.Println(err)
 	}
 }
-
 func (app *App) AllUsers(w http.ResponseWriter, r *http.Request) {
 
 	var users data.User
@@ -140,4 +139,25 @@ func (app *App) GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = app.writeJSON(w, http.StatusOK, user)
+}
+func (app *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	var requestPayload struct {
+		Id int `json:"userId"`
+	}
+	err := app.readJSON(w, r, &requestPayload)
+	if err != nil {
+		app.errorJSON(w, err)
+	}
+	err = app.models.User.DeleteById(requestPayload.Id)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	payload := jsonResponse{
+		Error:   false,
+		Message: "User deleted",
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, payload)
 }
