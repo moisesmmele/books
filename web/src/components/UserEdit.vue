@@ -81,8 +81,14 @@ export default {
             })
           })
     },
-    confirmDelete() {
-
+    confirmDelete(id) {
+      notie.confirm({
+        text: "Are you sure?",
+        submitText: "Delete",
+        submitCallback: function () {
+          console.log("Will delete: ", id)
+        }
+      })
     }
   }
 }

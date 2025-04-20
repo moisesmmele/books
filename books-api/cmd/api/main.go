@@ -102,3 +102,7 @@ func (app *App) EditUser(w http.ResponseWriter, r *http.Request) {
 	}
 	_ = app.writeJSON(w, http.StatusAccepted, payload)
 }
+
+func (app *App) DeleteUser(writer http.ResponseWriter, request *http.Request) {
+
+}
