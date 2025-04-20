@@ -16,13 +16,21 @@ export default {
   beforeMount() {
     security.requireToken()
     if (parseInt(String(this.$route.params.userId), 10) > 0) {
-      //editing existing user
+      fetch(process.env.VUE_APP_API_URL + "/admin/users/get/" + this.$route.params.userId, security.requestOptions())
+          .then((response) => response.json())
+          .then(response => {
+            if (response.error) {
+              notie.alert({
+                type: "error",
+                text: response.message,
+              })
+            } else {
+              console.log(response)
+              this.user = response
+              this.user.password = ""
+            }
+          })
     }
-  },
-
-  mounted() {
-    console.log("this.user.id: ", parseInt(String(this.user.id), 10))
-    console.log("store.user.id: ", store.user.id)
   },
 
   data() {
@@ -96,7 +104,7 @@ export default {
                       value="email" name="email"/>
           <text-input v-if="this.user.id === 0" v-model="user.password" type="password" required="true"
                       label="password" value="password" name="password"/>
-          <text-input v-else v-model="user.password" type="password" required="false"
+          <text-input v-else v-model="user.password" type="password" help="Leave empty to keep your existing password"
                       label="password" value="password" name="password"/>
           <div class="float-start">
             <input type="submit" class="btn btn-primary me-2" value="Save"/>
