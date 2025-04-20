@@ -1,6 +1,8 @@
 <script>
 import {store} from "@/components/store.js";
 import router from "@/router";
+import security from "@/components/security";
+
 export default {
   name: "AppHeader",
   data() {
@@ -13,14 +15,8 @@ export default {
       const payload = {
         token: store.token,
       }
-      const request = {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: {
-          "Content-Type": "application/json",
-        }
-      }
-      fetch(process.env.VUE_APP_API_URL + "/users/logout", request)
+
+      fetch(process.env.VUE_APP_API_URL + "/users/logout", security.requestOptions(payload))
           .then(res => res.json())
           .then(data => {
             if (data.error) {

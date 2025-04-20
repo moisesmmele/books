@@ -1,6 +1,10 @@
 <script>
+import security from "@/components/security";
 export default {
-  name: "BooksAdmin"
+  name: "BooksAdmin",
+  beforeMount() {
+    security.requireToken()
+  },
 }
 </script>
 

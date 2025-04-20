@@ -44,7 +44,6 @@ export default {
   },
   beforeMount() {
   let data = getCookie("_site_data")
-    console.log("data: " + typeof data + data)
     if (data !== null) {
       let cookieData = JSON.parse(data)
       store.token = cookieData.token.token

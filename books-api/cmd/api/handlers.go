@@ -1,6 +1,7 @@
 package main
 
 import (
+	"books-api/internal/data"
 	"errors"
 	"net/http"
 	"time"
@@ -96,6 +97,27 @@ func (app *App) Logout(w http.ResponseWriter, r *http.Request) {
 	payload := jsonResponse{
 		Error:   false,
 		Message: "deauthenticated",
+	}
+
+	err = app.writeJSON(w, http.StatusOK, payload)
+	if err != nil {
+		app.errorLog.Println(err)
+	}
+}
+
+func (app *App) AllUsers(w http.ResponseWriter, r *http.Request) {
+
+	var users data.User
+	all, err := users.GetAll()
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	payload := jsonResponse{
+		Error:   false,
+		Message: "Success",
+		Data:    envelope{"users": all},
 	}
 
 	err = app.writeJSON(w, http.StatusOK, payload)

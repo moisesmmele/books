@@ -4,29 +4,22 @@ import FormTag from "@/components/forms/FormTag.vue"
 import {store} from "@/components/store.js";
 import router from "@/router";
 import notie from "notie/dist/notie";
+import security from "@/components/security";
 
 export default {
   name: "AppLogin",
   components: {TextInput, FormTag},
   methods: {
     submitHandler() {
-      console.log("submitHandler called");
       const payload = {
         email: this.email,
         password: this.password,
       }
-      const request = {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: {
-          "Content-Type": "application/json",
-        }
-      }
-      fetch(process.env.VUE_APP_API_URL + "/users/login", request)
+
+      fetch(process.env.VUE_APP_API_URL + "/users/login", security.requestOptions(payload))
           .then((response) => response.json())
           .then((data) => {
             if (data.error) {
-              console.log(data.message)
               notie.alert({
                 type: "error",
                 text: data.message,
@@ -48,6 +41,10 @@ export default {
                   + "path=/; "
                   + "SameSite=Strict; "
                   + "Secure; " ;
+              notie.alert({
+                type: "success",
+                text: "You are now logged in.",
+              })
               router.push("/")
             }
           })

@@ -61,3 +61,44 @@ func (app *App) serve() error {
 	}
 	return srv.ListenAndServe()
 }
+
+func (app *App) EditUser(w http.ResponseWriter, r *http.Request) {
+	var user data.User
+	err := app.readJSON(w, r, &user)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	if user.Id == 0 {
+		if _, err := app.models.User.Insert(user); err != nil {
+			app.errorJSON(w, err)
+			return
+		}
+	} else {
+		if u, err := app.models.User.GetById(user.Id); err != nil {
+			app.errorJSON(w, err)
+			return
+		} else {
+			u.Email = user.Email
+			u.FirstName = user.FirstName
+			u.LastName = user.LastName
+			if err := u.Update(); err != nil {
+				app.errorJSON(w, err)
+				return
+			}
+			if user.Password != "" {
+				err := u.ResetPassword(user.Password)
+				if err != nil {
+					app.errorJSON(w, err)
+					return
+				}
+			}
+		}
+	}
+
+	payload := jsonResponse{
+		Error:   false,
+		Message: "Changes saved",
+	}
+	_ = app.writeJSON(w, http.StatusAccepted, payload)
+}
